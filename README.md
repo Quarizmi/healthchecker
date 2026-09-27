@@ -44,8 +44,8 @@ These roll up into a single **overall score from 0 to 100**.
 ### Installation
 
 ```bash
-git clone https://github.com/<org>/health-checker.git
-cd health-checker
+git clone https://github.com/<org>/healthchecker.git
+cd healthchecker
 # TBD: install dependencies
 ```
 
@@ -69,10 +69,10 @@ Every recommendation is yours to implement. If you'd rather have experts handle 
 
 Health Checker is a standalone tool. Quarizmi also maintains an open-source paid-search suite built around long-tail keywords:
 
-- **[EKEP](../ekep)** — discovers long-tail keywords
-- **[Bidbot](../bidbot)** — decides bids and which keywords to turn on or off
-- **[Usable](../usable)** — builds full campaigns with the user in the loop
-- **[Magneto](../magneto)** — writes high-relevance ads for every keyword
+- **[EKEP](https://github.com/Quarizmi/ekep)** — discovers long-tail keywords
+- **[Bidbot](https://github.com/Quarizmi/bidbot)** — decides bids and which keywords to turn on or off
+- **[Usable](https://github.com/Quarizmi/usable)** — builds full campaigns with the user in the loop
+- **[Magneto](https://github.com/Quarizmi/magneto)** — writes high-relevance ads for every keyword
 
 ## Contributing
 
