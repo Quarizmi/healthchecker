@@ -1,0 +1,46 @@
+{
+  "defaults": {
+    "lead_gen": {
+      "pmax_share_cap": [
+        { "max_conversions_per_month": 50, "max_pmax_share_pct": 20 },
+        { "max_conversions_per_month": null, "max_pmax_share_pct": 50 }
+      ]
+    },
+    "ecommerce": {
+      "shopping_pmax_share_floor": [
+        { "max_conversions_per_month": null, "min_shopping_pmax_share_pct": 70 }
+      ]
+    }
+  },
+  "overrides": {
+    "by_country": {},
+    "by_industry": {},
+    "by_customer_id": {}
+  },
+  "brandDetection": {
+    "campaignNameKeywords": ["brand", "marca"]
+  },
+  "keywordUtilization": {
+    "lookbackDays": 30,
+    "fullPointsAbovePct": 80,
+    "zeroPointsBelowPct": 50
+  },
+  "adCoverage": {
+    "lookbackDays": 30,
+    "minActiveAds": 2,
+    "fullPointsAbovePct": 80,
+    "zeroPointsBelowPct": 50
+  },
+  "budgetConstrainedShare": {
+    "limitedThresholdPct": 10,
+    "fullPointsAtLimitedPct": 0,
+    "zeroPointsAtLimitedPct": 40
+  },
+  "conversionTrackingIntegrity": {
+    "fullPointsAbovePct": 90,
+    "zeroPointsBelowPct": 50
+  },
+  "scoring": {
+    "metricMaxPoints": 12.5
+  }
+}

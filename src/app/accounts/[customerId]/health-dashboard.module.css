@@ -1,0 +1,331 @@
+.dashboard {
+  --health-good: #0ca30c;
+  --health-good-soft: #e3f6e3;
+  --health-warning: #fab219;
+  --health-warning-soft: #fef3dc;
+  --health-warning-text: #8a6103;
+  --health-critical: #d03b3b;
+  --health-critical-soft: #fbe6e6;
+  --health-pending: #8a8f98;
+  --health-pending-soft: #eceef1;
+
+  --health-accent: var(--brand-teal);
+  --health-surface: #ffffff;
+  --health-text: #171717;
+  --health-text-secondary: #52514e;
+  --health-text-muted: #898781;
+  --health-border: rgba(11, 11, 11, 0.1);
+  --health-track: #e1e0d9;
+
+  font-family: var(--font-mulish), system-ui, -apple-system, sans-serif;
+  color: var(--health-text);
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dashboard {
+    --health-warning-text: var(--health-warning);
+    --health-good-soft: rgba(12, 163, 12, 0.14);
+    --health-warning-soft: rgba(250, 178, 25, 0.16);
+    --health-critical-soft: rgba(208, 59, 59, 0.16);
+    --health-pending-soft: rgba(138, 143, 152, 0.18);
+
+    --health-accent: #35b4c2;
+    --health-surface: #1a1a19;
+    --health-text: #f0efec;
+    --health-text-secondary: #c3c2b7;
+    --health-text-muted: #898781;
+    --health-border: rgba(255, 255, 255, 0.1);
+    --health-track: #2c2c2a;
+  }
+}
+
+.sectionLabel {
+  font-family: var(--font-mulish), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--health-text-muted);
+  margin: 0 0 12px;
+}
+
+/* ---- hero ---- */
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px;
+  background: var(--health-surface);
+  border: 1px solid var(--health-border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+
+.ringWrap {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  flex: none;
+}
+
+.ringWrap svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ringCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ringScore {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ringMax {
+  font-size: 12px;
+  color: var(--health-text-muted);
+  margin-top: 2px;
+}
+
+.heroBody {
+  flex: 1;
+  min-width: 240px;
+}
+
+.heroBody h2 {
+  font-family: var(--font-mulish), system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.heroSub {
+  color: var(--health-text-secondary);
+  font-size: 13.5px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  max-width: 52ch;
+}
+
+.tierLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 14px;
+  font-size: 11.5px;
+  color: var(--health-text-muted);
+}
+
+.tierLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tierDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ---- status pill ---- */
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 999px;
+}
+
+.statusPill::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.statusPill_good {
+  color: var(--health-good);
+  background: var(--health-good-soft);
+}
+
+.statusPill_warning {
+  color: var(--health-warning-text);
+  background: var(--health-warning-soft);
+}
+
+.statusPill_critical {
+  color: var(--health-critical);
+  background: var(--health-critical-soft);
+}
+
+.statusPill_pending {
+  color: var(--health-pending);
+  background: var(--health-pending-soft);
+}
+
+/* ---- signal card grid ---- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .heroSub {
+    max-width: none;
+  }
+
+  .tierLegend {
+    justify-content: center;
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  background: var(--health-surface);
+  border: 1px solid var(--health-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.stripe {
+  width: 4px;
+  flex-shrink: 0;
+}
+
+.stripe_good {
+  background: var(--health-good);
+}
+
+.stripe_warning {
+  background: var(--health-warning);
+}
+
+.stripe_critical {
+  background: var(--health-critical);
+}
+
+.stripe_pending {
+  background: var(--health-pending);
+}
+
+.cardBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px 16px;
+}
+
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.cardTitle {
+  font-family: var(--font-mulish), system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--health-text-secondary);
+}
+
+.cardStat {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.cardMeta {
+  font-size: 12px;
+  color: var(--health-text-muted);
+  margin-top: -3px;
+}
+
+.cardExplain {
+  font-size: 12.5px;
+  color: var(--health-text-secondary);
+  line-height: 1.45;
+}
+
+.cardFooter {
+  margin-top: auto;
+  padding-top: 6px;
+  font-size: 10.5px;
+  color: var(--health-text-muted);
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px dashed var(--health-border);
+}
+
+/* ---- meter bar ---- */
+
+.meter {
+  position: relative;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--health-track);
+  margin-top: 2px;
+}
+
+.meterFill {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+}
+
+.meterFill_good {
+  background: var(--health-good);
+}
+
+.meterFill_warning {
+  background: var(--health-warning);
+}
+
+.meterFill_critical {
+  background: var(--health-critical);
+}
+
+.meterTick {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 12px;
+  background: var(--health-text);
+  opacity: 0.35;
+}

@@ -1,0 +1,29 @@
+{
+  "name": "health-checker",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=21"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -p ${PORT:-3000}",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^9.3.1",
+    "next": "16.4.2",
+    "next-auth": "^5.0.0-beta.32",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.2",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,90 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.childList {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .childList {
+    border-left-color: rgba(255, 255, 255, 0.14);
+  }
+}
+
+/* Wraps a top-level group's row plus its nested child list — block, not
+ * flex, so the children stack below the row instead of sitting beside it. */
+.group {
+  display: block;
+}
+
+.row {
+  display: block;
+}
+
+.rowLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .rowLink {
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .rowLink:hover {
+    background-color: rgba(247, 183, 51, 0.08);
+    border-color: var(--brand-orange);
+  }
+}
+
+.rowText {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.accountId {
+  color: var(--foreground);
+  opacity: 0.6;
+  font-size: 0.9em;
+}
+
+.badge {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--foreground);
+  opacity: 0.6;
+  margin-left: 6px;
+}
+
+/* The "this is a manager account" badge gets the brand teal — it's an
+ * action cue (click to drill in), not a passive status label like the
+ * other badges. */
+.managerBadge {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--brand-teal);
+  margin-left: 6px;
+}
