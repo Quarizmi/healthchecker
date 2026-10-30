@@ -3,6 +3,7 @@ import { auth, signIn } from "@/auth";
 import { listAccountGroup, listManagedAccounts, type ManagedAccount } from "@/lib/google-ads";
 import { displayError } from "@/lib/error-display";
 import { GoogleAdsIcon } from "./_components/GoogleAdsIcon";
+import { ContactLinks } from "./_components/ContactLinks";
 import pageStyles from "./page.module.css";
 import styles from "./account-list.module.css";
 
@@ -47,9 +48,19 @@ export default async function Home({
   if (!session?.user) {
     return (
       <div className={pageStyles.page}>
-        <main className={pageStyles.main}>
-          <h1>Marketing Health Checker</h1>
-          <p>Sign in with Google to see which Google Ads accounts you have access to.</p>
+        <main className={pageStyles.loginCard}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
+          <img src="/quarizmi-logo.svg" alt="Quarizmi" className={pageStyles.loginLogo} />
+          <h1 className={pageStyles.loginTitle}>Health Checker</h1>
+          <p className={pageStyles.loginTagline}>Google Ads Account Health Checker</p>
+          <p className={pageStyles.loginBody}>
+            Connect a Google Ads account and get an instant 0&ndash;100 health score for how
+            well it&rsquo;s being managed, with concrete recommendations for what to fix first.
+          </p>
+
+          <p className={pageStyles.contactLabel}>Get in touch:</p>
+          <ContactLinks />
+
           <form
             action={async () => {
               "use server";
@@ -60,7 +71,41 @@ export default async function Home({
               Sign in with Google
             </button>
           </form>
+          <p className={pageStyles.pendingNote}>
+            Google is still reviewing our app, so sign-in is invite-only for now &mdash; message
+            us above first and we&rsquo;ll add you as a tester.
+          </p>
         </main>
+
+        <section className={pageStyles.howItWorks}>
+          <h2 className={pageStyles.howItWorksTitle}>How it works</h2>
+          <ol className={pageStyles.howItWorksList}>
+            <li>
+              <strong>Connect.</strong> Sign in with the Google account that has access to the
+              Google Ads account(s) you want checked. Quarizmi AdTech only reads the Google Ads
+              data needed to run the checks below &mdash; it never changes your account settings.
+            </li>
+            <li>
+              <strong>Score.</strong> The app pulls your recent campaign, keyword, and
+              configuration data and turns it into a single 0&ndash;100 health score.
+            </li>
+            <li>
+              <strong>Fix.</strong> You get a prioritized list of concrete issues to address,
+              instead of having to dig through the Google Ads UI yourself.
+            </li>
+          </ol>
+          <p className={pageStyles.howItWorksFootnote}>
+            Built and operated by{" "}
+            <a href="https://quarizmi.com" target="_blank" rel="noopener noreferrer">
+              Quarizmi AdTech, Inc.
+            </a>
+            . See our{" "}
+            <a href="https://quarizmi.com/privacy-cookies/" target="_blank" rel="noopener noreferrer">
+              Privacy Policy
+            </a>{" "}
+            for details on how your data is handled.
+          </p>
+        </section>
       </div>
     );
   }

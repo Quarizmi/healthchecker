@@ -1,0 +1,48 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 440px;
+  padding: 80px 32px;
+  text-align: center;
+}
+
+.message {
+  margin-top: 12px;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+
+.actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.contactLabel {
+  margin-top: 32px;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+.debugDetail {
+  margin-top: 20px;
+  width: 100%;
+  max-height: 280px;
+  overflow: auto;
+  text-align: left;
+  font-size: 0.75rem;
+  background: rgba(128, 128, 128, 0.08);
+  border-radius: 6px;
+  padding: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.debugHint {
+  margin-top: 16px;
+  font-size: 0.7rem;
+  opacity: 0.4;
+}

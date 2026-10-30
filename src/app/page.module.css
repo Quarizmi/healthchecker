@@ -30,3 +30,102 @@
     padding: 48px 24px;
   }
 }
+
+.loginCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  padding: 80px 32px;
+  text-align: center;
+}
+
+.loginLogo {
+  height: 56px;
+  width: auto;
+  margin-bottom: 28px;
+}
+
+.loginTitle {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.loginTagline {
+  margin-top: 8px;
+  color: var(--brand-teal);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.loginBody {
+  margin-top: 20px;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+
+.loginCard form {
+  margin-top: 28px;
+}
+
+.contactLabel {
+  margin-top: 28px;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+}
+
+.pendingNote {
+  margin-top: 12px;
+  max-width: 320px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .loginCard {
+    padding: 56px 24px;
+  }
+}
+
+.howItWorks {
+  width: 100%;
+  max-width: 560px;
+  padding: 0 32px 64px;
+  text-align: left;
+}
+
+.howItWorksTitle {
+  font-size: 1.1rem;
+  margin: 0 0 16px;
+}
+
+.howItWorksList {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+
+.howItWorksFootnote {
+  margin-top: 28px;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .howItWorks {
+    padding: 0 24px 48px;
+  }
+}

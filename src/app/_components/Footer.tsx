@@ -47,8 +47,9 @@ async function revokeAccessAction() {
   await signOut({ redirectTo: "/" });
 }
 
-export function Footer() {
+export async function Footer() {
   const year = new Date().getFullYear();
+  const session = await auth();
 
   return (
     <footer
@@ -63,23 +64,30 @@ export function Footer() {
         opacity: 0.75,
       }}
     >
-      <span>&copy; Quarizmi {year}</span>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <form action={revokeAccessAction}>
-          <button
-            type="submit"
-            style={linkButtonStyle}
-            title="Revokes this app's access to your Google Ads data on Google's side and signs you out — the same as removing it from myaccount.google.com/permissions"
-          >
-            Revoke access
-          </button>
-        </form>
-        <form action={signOutAction}>
-          <button type="submit" style={linkButtonStyle}>
-            Sign out
-          </button>
-        </form>
+        <span>&copy; Quarizmi {year}</span>
+        <a href="https://quarizmi.com/privacy-cookies/" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
+          Privacy Policy
+        </a>
       </div>
+      {session?.user && (
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <form action={revokeAccessAction}>
+            <button
+              type="submit"
+              style={linkButtonStyle}
+              title="Revokes this app's access to your Google Ads data on Google's side and signs you out — the same as removing it from myaccount.google.com/permissions"
+            >
+              Revoke access
+            </button>
+          </form>
+          <form action={signOutAction}>
+            <button type="submit" style={linkButtonStyle}>
+              Sign out
+            </button>
+          </form>
+        </div>
+      )}
     </footer>
   );
 }

@@ -2,6 +2,12 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  pages: {
+    // Our own friendly page instead of NextAuth's default error screen —
+    // see src/app/auth/error/page.tsx. AccessDenied is the one we expect
+    // regularly while the app is pending Google's OAuth verification.
+    error: "/auth/error",
+  },
   providers: [
     Google({
       authorization: {

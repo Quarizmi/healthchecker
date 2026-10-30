@@ -37,9 +37,9 @@ import {
   type MetricResult,
 } from "@/lib/health-score";
 import { HealthDashboard } from "./_components/HealthDashboard";
+import { DebugPanel } from "./_components/DebugPanel";
 import { GearIcon } from "../../_components/GearIcon";
-import { displayError } from "@/lib/error-display";
-import { formatChannelType } from "@/lib/format";
+import { recordHealthCheckView } from "@/lib/crm";
 import styles from "../../page.module.css";
 import type { AutoApplyRulesResult, SearchNetworkSettingsResult } from "@/lib/google-ads";
 import type { HealthScore } from "@/lib/health-score";
@@ -344,6 +344,26 @@ async function runHealthCheck(
 
   const healthScore = aggregateHealthScore(metrics);
 
+  // Side-channel usage log for the admin CRM view — never allowed to break
+  // the health check itself if Firestore hiccups.
+  if (session.user?.email) {
+    await timed(
+      "recordHealthCheckView",
+      recordHealthCheckView({
+        email: session.user.email,
+        name: session.user.name ?? null,
+        customerId,
+        accountName,
+        totalSpendMicros,
+        spendByChannelType,
+        primaryDomain,
+      }).catch((err) => {
+        console.error("Failed to record CRM lead:", err);
+      }),
+      callTimings
+    );
+  }
+
   return {
     healthScore,
     autoApplyResult,
@@ -420,89 +440,20 @@ export default async function AccountCampaigns({
         </p>
         <p>Total spend (last 30 days): ${(totalSpendMicros / 1_000_000).toFixed(2)}</p>
 
-        <HealthDashboard healthScore={healthScore} />
+        <HealthDashboard
+          healthScore={healthScore}
+          customerId={customerId}
+          userEmail={session?.user?.email ?? null}
+          userName={session?.user?.name ?? null}
+        />
 
-        {autoApplyResult && (
-          <>
-            <h2>Auto-apply recommendation rules</h2>
-            {autoApplyResult.ok ? (
-              autoApplyResult.rules.length > 0 ? (
-                <p>
-                  {autoApplyResult.rules.filter((rule) => rule.status === "ENABLED").length}{" "}
-                  enabled,{" "}
-                  {autoApplyResult.rules.filter((rule) => rule.status !== "ENABLED").length} not
-                  enabled.
-                </p>
-              ) : (
-                <p>No auto-apply rules configured for this account.</p>
-              )
-            ) : (
-              <p style={{ color: "crimson" }}>{displayError(autoApplyResult.error)}</p>
-            )}
-          </>
-        )}
-
-        {searchNetworkResult &&
-          (searchNetworkResult.ok ? (
-            <p>
-              {searchNetworkResult.campaigns.filter((c) => c.searchPartners || c.display).length}{" "}
-              search campaigns have Display or Search Partners enabled.{" "}
-              {searchNetworkResult.campaigns.filter((c) => c.searchPartners && c.display).length}{" "}
-              have both enabled.
-            </p>
-          ) : (
-            <p style={{ color: "crimson" }}>{displayError(searchNetworkResult.error)}</p>
-          ))}
-
-        {spendByChannelType.length > 0 && (
-          <>
-            <h2>Spend by campaign type</h2>
-            <table style={{ borderCollapse: "collapse", width: "100%", maxWidth: 420 }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: "left", padding: "4px 12px 4px 0", fontWeight: 600 }}>
-                    Campaign type
-                  </th>
-                  <th style={{ textAlign: "right", padding: "4px 12px", fontWeight: 600 }}>Spend</th>
-                  <th style={{ textAlign: "right", padding: "4px 0", fontWeight: 600 }}>% of spend</th>
-                </tr>
-              </thead>
-              <tbody>
-                {spendByChannelType.map((row) => (
-                  <tr key={row.channelType} style={{ borderTop: "1px solid rgba(0, 0, 0, 0.1)" }}>
-                    <td style={{ padding: "4px 12px 4px 0" }}>{formatChannelType(row.channelType)}</td>
-                    <td style={{ textAlign: "right", padding: "4px 12px" }}>
-                      ${(row.costMicros / 1_000_000).toFixed(2)}
-                    </td>
-                    <td style={{ textAlign: "right", padding: "4px 0" }}>{row.pct.toFixed(0)}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
-
-        <p style={{ color: "#888", fontSize: "0.85em", marginTop: 16 }}>
-          Health check calculated in {(durationMs / 1000).toFixed(2)}s.
-        </p>
-
-        {callTimings.length > 0 && (
-          <details style={{ color: "#888", fontSize: "0.85em", marginTop: 4 }}>
-            <summary style={{ cursor: "pointer" }}>Per-call timing breakdown</summary>
-            <table style={{ borderCollapse: "collapse", marginTop: 8, maxWidth: 420 }}>
-              <tbody>
-                {[...callTimings]
-                  .sort((a, b) => b.ms - a.ms)
-                  .map((t) => (
-                    <tr key={t.label}>
-                      <td style={{ padding: "2px 12px 2px 0" }}>{t.label}</td>
-                      <td style={{ textAlign: "right", padding: "2px 0" }}>{t.ms}ms</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </details>
-        )}
+        <DebugPanel
+          autoApplyResult={autoApplyResult}
+          searchNetworkResult={searchNetworkResult}
+          spendByChannelType={spendByChannelType}
+          durationMs={durationMs}
+          callTimings={callTimings}
+        />
       </main>
     </div>
   );

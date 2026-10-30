@@ -10,7 +10,17 @@ const TIER_LABEL = {
   critical: "Critical",
 } as const;
 
-export function HealthDashboard({ healthScore }: { healthScore: HealthScore }) {
+export function HealthDashboard({
+  healthScore,
+  customerId,
+  userEmail,
+  userName,
+}: {
+  healthScore: HealthScore;
+  customerId: string;
+  userEmail: string | null;
+  userName: string | null;
+}) {
   return (
     <div className={`${styles.dashboard} ${jetbrainsMono.variable}`}>
       <section className={styles.hero}>
@@ -62,7 +72,13 @@ export function HealthDashboard({ healthScore }: { healthScore: HealthScore }) {
       </p>
       <div className={styles.grid}>
         {healthScore.metrics.map((metric) => (
-          <SignalCard key={metric.id} metric={metric} />
+          <SignalCard
+            key={metric.id}
+            metric={metric}
+            customerId={customerId}
+            userEmail={userEmail}
+            userName={userName}
+          />
         ))}
       </div>
     </div>

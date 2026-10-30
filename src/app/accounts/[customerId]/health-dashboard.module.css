@@ -290,7 +290,188 @@
   color: var(--health-text-muted);
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border-top: 1px dashed var(--health-border);
+}
+
+.detailsTrigger {
+  font-family: var(--font-mulish), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--health-accent);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.detailsTrigger:hover {
+  text-decoration: underline;
+}
+
+/* ---- metric detail modal ---- */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 9, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 20px;
+  overflow-y: auto;
+}
+
+.modalPanel {
+  font-family: var(--font-mulish), system-ui, sans-serif;
+  color: var(--health-text);
+  background: var(--health-surface);
+  border: 1px solid var(--health-border);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 560px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 22px 0;
+}
+
+.modalTitle {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  color: var(--health-text-muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  flex-shrink: 0;
+}
+
+.modalClose:hover {
+  color: var(--health-text);
+}
+
+.modalBody {
+  padding: 4px 22px 22px;
+}
+
+.modalStat {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 10px;
+}
+
+.modalMeta {
+  font-size: 12.5px;
+  color: var(--health-text-muted);
+  margin-top: 2px;
+}
+
+.modalMeter {
+  margin-top: 14px;
+}
+
+.modalSection {
+  margin-top: 20px;
+}
+
+.modalSectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--health-text-muted);
+  margin: 0 0 6px;
+}
+
+.modalSectionBody {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--health-text-secondary);
+  margin: 0;
+}
+
+.feedbackSection {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--health-border);
+}
+
+.feedbackPrompt {
+  font-size: 13px;
+  color: var(--health-text);
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.feedbackTextarea {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--health-text);
+  background: var(--health-surface);
+  border: 1px solid var(--health-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+
+.feedbackTextarea:focus {
+  outline: 2px solid var(--health-accent);
+  outline-offset: -1px;
+}
+
+.feedbackActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.feedbackSubmit {
+  font-family: var(--font-mulish), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--health-accent);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.feedbackSubmit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.feedbackSuccess {
+  font-size: 13px;
+  color: var(--health-good);
+  font-weight: 600;
+  margin: 0;
+}
+
+.feedbackError {
+  font-size: 12.5px;
+  color: var(--health-critical);
+  margin: 8px 0 0;
 }
 
 /* ---- meter bar ---- */

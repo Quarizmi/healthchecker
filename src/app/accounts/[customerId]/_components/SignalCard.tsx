@@ -1,6 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import styles from "../health-dashboard.module.css";
 import type { MetricResult } from "@/lib/health-score";
 import { MeterBar } from "./MeterBar";
+import { MetricDetailModal } from "./MetricDetailModal";
 
 const STRIPE_CLASS: Record<MetricResult["status"], string> = {
   good: styles.stripe_good,
@@ -23,7 +27,19 @@ const PILL_LABEL: Record<MetricResult["status"], string> = {
   pending: "Pending",
 };
 
-export function SignalCard({ metric }: { metric: MetricResult }) {
+export function SignalCard({
+  metric,
+  customerId,
+  userEmail,
+  userName,
+}: {
+  metric: MetricResult;
+  customerId: string;
+  userEmail: string | null;
+  userName: string | null;
+}) {
+  const [detailOpen, setDetailOpen] = useState(false);
+
   return (
     <article className={styles.card}>
       <div className={`${styles.stripe} ${STRIPE_CLASS[metric.status]}`} />
@@ -46,11 +62,28 @@ export function SignalCard({ metric }: { metric: MetricResult }) {
         )}
         <div className={styles.cardFooter}>
           <span>Contributes {metric.maxPoints} pts</span>
+          <button
+            type="button"
+            className={styles.detailsTrigger}
+            onClick={() => setDetailOpen(true)}
+          >
+            See more
+          </button>
           <span>
             {metric.status === "pending" ? "—" : metric.points} / {metric.maxPoints}
           </span>
         </div>
       </div>
+
+      {detailOpen && (
+        <MetricDetailModal
+          metric={metric}
+          customerId={customerId}
+          userEmail={userEmail}
+          userName={userName}
+          onClose={() => setDetailOpen(false)}
+        />
+      )}
     </article>
   );
 }

@@ -37,7 +37,7 @@ function getFirestore(): Firestore {
     // projectId is explicit rather than relying on ambient detection — this
     // app only ever talks to the one GCP project it's deployed in, same
     // spirit as the hardcoded Google Ads API version elsewhere in this repo.
-    firestoreClient = new Firestore({ projectId: "quarizmi-health-checker" });
+    firestoreClient = new Firestore({ projectId: "quarizmi-adshealth" });
   }
   return firestoreClient;
 }
