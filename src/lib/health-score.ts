@@ -3,6 +3,7 @@
 
 import type { BusinessType, PmaxShareCapTier, ShoppingPmaxFloorTier } from "./health-config";
 import { displayError } from "./error-display";
+import { formatNumber, formatPercent } from "./format";
 
 export type MetricId =
   | "spendConcentration" // #1 — Phase 2 (needs conversion_action)
@@ -33,6 +34,11 @@ export type MetricResult = {
    * (a fixed one-liner per metric type), this is generated per call so it
    * can cite the actual threshold values and computed figures. */
   methodology: string;
+  /** Concrete, actionable suggestions for the metric's own detail page —
+   * empty when there's nothing to act on yet (no data) or the metric is
+   * a binary present/absent check that's already satisfied. First-pass
+   * copy, expected to be refined metric by metric. */
+  recommendations: string[];
   /** 0-100, only set for percentage-shaped metrics with a meter bar. */
   meterPct?: number;
   /** Optional threshold tick mark position on the meter, 0-100. */
@@ -124,6 +130,7 @@ export function buildNoDataHealthScore(maxPoints: number): HealthScore {
     meta: "No ad spend in the last 30 days.",
     explanation: m.explanation,
     methodology: m.methodology,
+    recommendations: [],
   }));
 
   return {
@@ -194,6 +201,7 @@ export function pendingMetric(args: {
     meta: args.meta,
     explanation: args.explanation,
     methodology: "This metric's data source isn't wired up yet, so there's nothing to score.",
+    recommendations: [],
   };
 }
 
@@ -217,6 +225,7 @@ export function errorMetric(
     meta: displayError(errorText),
     explanation: "This metric couldn't be loaded — see the error above.",
     methodology: "This metric couldn't be scored because the underlying data failed to load.",
+    recommendations: [],
   };
 }
 
@@ -269,6 +278,7 @@ export function scoreSpendConcentration(
       explanation:
         "Checks PMax/Shopping share against what's healthy for this account's business type.",
       methodology: "No campaign spend in the last 30 days, so there's nothing to check share against yet.",
+      recommendations: [],
     };
   }
 
@@ -285,11 +295,16 @@ export function scoreSpendConcentration(
       points,
       maxPoints,
       value: pmaxPct,
-      valueLabel: `${pmaxPct.toFixed(0)}%`,
-      meta: `${pmaxPct.toFixed(0)}% of spend on PMax, ${primaryConversionsLast30Days} primary conversions/mo (lead-gen cap: ${cap}%).`,
+      valueLabel: formatPercent(pmaxPct),
+      meta: `${formatPercent(pmaxPct)} of spend on PMax, ${formatNumber(primaryConversionsLast30Days)} primary conversions/mo (lead-gen cap: ${formatPercent(cap)}).`,
       explanation:
         "High PMax share for this account's conversion volume — the algorithm doesn't have enough signal yet to optimize well at this size.",
-      methodology: `We total this account's spend over the last 30 days and work out what share went to Performance Max campaigns. With ${primaryConversionsLast30Days} primary conversions/month, the cap we use for this account is ${cap}% — Performance Max tends to need more conversion volume than that to bid well, so going above it usually means the algorithm is running with too little signal. This account is at ${pmaxPct.toFixed(0)}%. Full points apply at or under ${cap}%; points fall off linearly to zero once PMax share reaches ${(cap * 1.5).toFixed(0)}% (1.5x the cap), so there's a buffer rather than a hard cliff right at the line.`,
+      methodology: `We total this account's spend over the last 30 days and work out what share went to Performance Max campaigns. With ${formatNumber(primaryConversionsLast30Days)} primary conversions/month, the cap we use for this account is ${formatPercent(cap)} — Performance Max tends to need more conversion volume than that to bid well, so going above it usually means the algorithm is running with too little signal. This account is at ${formatPercent(pmaxPct)}. Full points apply at or under ${formatPercent(cap)}; points fall off linearly to zero once PMax share reaches ${formatPercent(cap * 1.5)} (1.5x the cap), so there's a buffer rather than a hard cliff right at the line.`,
+      recommendations: [
+        "Lower the Performance Max budget until monthly primary conversions grow enough to support it, shifting freed budget into Search.",
+        "Tighten Performance Max asset groups' audience signals and listing groups so the algorithm has more to work with despite low conversion volume.",
+        "Hold PMax spend flat until the account clears the next conversion-volume tier, rather than scaling PMax ahead of the data that feeds it.",
+      ],
       meterPct: Math.min(pmaxPct, 100),
       thresholdTickPct: cap,
     };
@@ -307,11 +322,16 @@ export function scoreSpendConcentration(
     points,
     maxPoints,
     value: shoppingPmaxPct,
-    valueLabel: `${shoppingPmaxPct.toFixed(0)}%`,
-    meta: `${shoppingPmaxPct.toFixed(0)}% of spend on Shopping + PMax (e-commerce floor: ${floor}%).`,
+    valueLabel: formatPercent(shoppingPmaxPct),
+    meta: `${formatPercent(shoppingPmaxPct)} of spend on Shopping + PMax (e-commerce floor: ${formatPercent(floor)}).`,
     explanation:
       "Low Shopping/PMax share for an e-commerce account — likely underusing the channel built for this business.",
-    methodology: `We total this account's spend over the last 30 days and work out what share went to Shopping + Performance Max — the channels built for product-based e-commerce discovery. With ${primaryConversionsLast30Days} primary conversions/month, the floor we use for this account is ${floor}%. This account is at ${shoppingPmaxPct.toFixed(0)}%. Full points apply at or above ${floor}%; points fall off linearly to zero at half that floor (${(floor / 2).toFixed(0)}%).`,
+    methodology: `We total this account's spend over the last 30 days and work out what share went to Shopping + Performance Max — the channels built for product-based e-commerce discovery. With ${formatNumber(primaryConversionsLast30Days)} primary conversions/month, the floor we use for this account is ${formatPercent(floor)}. This account is at ${formatPercent(shoppingPmaxPct)}. Full points apply at or above ${formatPercent(floor)}; points fall off linearly to zero at half that floor (${formatPercent(floor / 2)}).`,
+    recommendations: [
+      "Shift budget from Search-only campaigns into Shopping/PMax — the channel mix built for product discovery.",
+      "Audit the Merchant Center feed (titles, images, GTINs) before scaling Shopping spend, so the added budget actually converts.",
+      "Launch or expand a Performance Max campaign fed by the existing Shopping feed if one isn't already running.",
+    ],
     meterPct: Math.min(shoppingPmaxPct, 100),
     thresholdTickPct: floor,
   };
@@ -338,6 +358,13 @@ export function scoreBrandPresence(
       "No dedicated brand campaign usually means wasted spend or a structural gap in account setup.",
     methodology:
       "We check every campaign's classification — set automatically from this account's configured brand keywords, with manual overrides available in Account settings — for at least one marked as a dedicated brand campaign. This is scored as present/absent rather than a percentage: one dedicated brand campaign already captures nearly all the branded-search value a dedicated setup provides, so there's no meaningful partial credit between \"none\" and \"at least one.\"",
+    recommendations: matched
+      ? []
+      : [
+          "Create a Search campaign targeting the account's own brand/company-name terms, separate from non-brand campaigns.",
+          "Fund it modestly — brand terms are typically cheap and convert well, so it rarely needs much budget.",
+          "Add brand terms as negatives on non-brand campaigns once the dedicated one is live, so reporting doesn't double up.",
+        ],
   };
 }
 
@@ -363,11 +390,16 @@ export function scoreKeywordUtilization(
     points,
     maxPoints,
     value: pct,
-    valueLabel: `${pct.toFixed(0)}%`,
-    meta: `${input.keywordsWithImpressionsCount} of ${input.enabledKeywordCount} enabled keywords served an impression.`,
+    valueLabel: formatPercent(pct),
+    meta: `${formatNumber(input.keywordsWithImpressionsCount)} of ${formatNumber(input.enabledKeywordCount)} enabled keywords served an impression.`,
     explanation:
       "A large block of never-serving keywords signals a bloated, set-and-forget list.",
-    methodology: `We compare how many of this account's enabled keywords are actually serving impressions against how many exist. ${input.keywordsWithImpressionsCount} of ${input.enabledKeywordCount} enabled keywords served at least one impression, a ${pct.toFixed(0)}% utilization rate. Full points apply at or above ${curve.fullPointsAbovePct}%; points fall to zero at or below ${curve.zeroPointsBelowPct}%, scaling linearly in between. A keyword that serves on some days and then gets paused can push the raw ratio above 100%, which we clamp back to 100% rather than showing as "over-utilized."`,
+    methodology: `We compare how many of this account's enabled keywords are actually serving impressions against how many exist. ${formatNumber(input.keywordsWithImpressionsCount)} of ${formatNumber(input.enabledKeywordCount)} enabled keywords served at least one impression, a ${formatPercent(pct)} utilization rate. Full points apply at or above ${formatPercent(curve.fullPointsAbovePct)}; points fall to zero at or below ${formatPercent(curve.zeroPointsBelowPct)}, scaling linearly in between. A keyword that serves on some days and then gets paused can push the raw ratio above 100%, which we clamp back to 100% rather than showing as "over-utilized."`,
+    recommendations: [
+      "Pause or delete keywords with zero impressions in the lookback window — they're not helping and may be dragging down Quality Score.",
+      "Loosen match type or bids on good-intent keywords that still aren't serving.",
+      "Consolidate near-duplicate long-tail keywords into broader match groups instead of keeping large dormant lists.",
+    ],
     meterPct: pct,
     thresholdTickPct: curve.fullPointsAbovePct,
   };
@@ -391,10 +423,17 @@ export function scoreNegativeKeywordCoverage(
     valueLabel: allCovered ? "Covered" : "Gap found",
     meta: allCovered
       ? "Every broad-match Search campaign has negative keyword coverage."
-      : `${gapCount} broad-match campaign(s) with zero negative keyword coverage.`,
+      : `${formatNumber(gapCount)} broad-match campaign(s) with zero negative keyword coverage.`,
     explanation:
       "A broad-match campaign with no negatives at all is a minimum-bar red flag, not a partial one.",
-    methodology: `We check every broad-match Search campaign in this account for at least some negative keyword coverage. ${allCovered ? "Every qualifying campaign has at least some negative keyword coverage." : `${gapCount} campaign(s) have zero negatives at all.`} This is a minimum-bar check, not a percentage — a campaign with zero negatives is a structural gap regardless of how thorough its negatives would need to be to call it "complete," so coverage is scored as present/absent rather than partial.`,
+    methodology: `We check every broad-match Search campaign in this account for at least some negative keyword coverage. ${allCovered ? "Every qualifying campaign has at least some negative keyword coverage." : `${formatNumber(gapCount)} campaign(s) have zero negatives at all.`} This is a minimum-bar check, not a percentage — a campaign with zero negatives is a structural gap regardless of how thorough its negatives would need to be to call it "complete," so coverage is scored as present/absent rather than partial.`,
+    recommendations: allCovered
+      ? []
+      : [
+          "Add a negative keyword list to every broad-match campaign missing one, starting with the highest-spend campaigns.",
+          "Mine the Search Terms report for irrelevant queries already spending money and add them as negatives.",
+          "Build one shared negative list for obviously irrelevant terms and apply it account-wide.",
+        ],
   };
 }
 
@@ -416,6 +455,13 @@ export function scoreAccountActivity(hasQualifyingActivity: boolean, maxPoints: 
       : "No changes in the last 30 days other than campaign pausing/unpausing, if any.",
     explanation: "Directly answers whether anyone has been managing this account recently.",
     methodology: `We look at every change made to this account in the last 30 days and check whether any of them is something other than a campaign being paused or unpaused — pausing/unpausing alone doesn't count, since it can happen automatically or reflect routine budget management rather than active optimization. ${hasQualifyingActivity ? "At least one qualifying change was found." : "No qualifying change was found in the window."} This is scored as active/inactive, not a percentage: either the account shows signs of active management in the window, or it doesn't.`,
+    recommendations: hasQualifyingActivity
+      ? []
+      : [
+          "Put a recurring review cadence (weekly/biweekly) in place so bids, budgets, and keywords get touched regularly.",
+          "Act on at least one pending recommendation or search-term insight per review cycle.",
+          "If a script or automated rule is doing the real work, make sure some of that shows up as an account change Google Ads can see — not just in an external system.",
+        ],
   };
 }
 
@@ -438,10 +484,15 @@ export function scoreAdCoverage(
     points,
     maxPoints,
     value: pct,
-    valueLabel: `${pct.toFixed(0)}%`,
-    meta: `${meeting} of ${total} active ad groups have ${minActiveAds}+ enabled ads.`,
+    valueLabel: formatPercent(pct),
+    meta: `${formatNumber(meeting)} of ${formatNumber(total)} active ad groups have ${formatNumber(minActiveAds)}+ enabled ads.`,
     explanation: "Single-ad ad groups give Smart Bidding nothing to A/B learn from.",
-    methodology: `We check every ad group in this account that's eligible to carry multiple ads for whether it has at least ${minActiveAds} enabled ads — Smart Bidding needs more than one ad per ad group to actually A/B learn what performs best. ${meeting} of ${total} qualifying ad groups meet that bar, a ${pct.toFixed(0)}% coverage rate. Full points apply at or above ${curve.fullPointsAbovePct}%; points fall to zero at or below ${curve.zeroPointsBelowPct}%, scaling linearly in between.`,
+    methodology: `We check every ad group in this account that's eligible to carry multiple ads for whether it has at least ${formatNumber(minActiveAds)} enabled ads — Smart Bidding needs more than one ad per ad group to actually A/B learn what performs best. ${formatNumber(meeting)} of ${formatNumber(total)} qualifying ad groups meet that bar, a ${formatPercent(pct)} coverage rate. Full points apply at or above ${formatPercent(curve.fullPointsAbovePct)}; points fall to zero at or below ${formatPercent(curve.zeroPointsBelowPct)}, scaling linearly in between.`,
+    recommendations: [
+      "Add a second enabled ad to every ad group running with just one, so Smart Bidding has something to test against.",
+      "Make the two ads meaningfully different (headlines/descriptions), not near-duplicates.",
+      "Don't let pausing underperformers create new single-ad ad groups — add the replacement before removing the loser.",
+    ],
     meterPct: pct,
     thresholdTickPct: curve.fullPointsAbovePct,
   };
@@ -503,6 +554,7 @@ export function scoreConversionTrackingIntegrity(
         "Spend-weighted: a campaign counts fully only if every conversion action tied to its goal is actually recording data.",
       methodology:
         "No campaign spend with a trackable conversion goal in the last 30 days, so there's nothing to check conversion actions against yet.",
+      recommendations: [],
     };
   }
 
@@ -520,11 +572,16 @@ export function scoreConversionTrackingIntegrity(
     points,
     maxPoints,
     value: pct,
-    valueLabel: `${pct.toFixed(0)}%`,
-    meta: `${brokenCampaigns.length} of ${judged.length} campaigns (${brokenSpendPct.toFixed(0)}% of spend) have a conversion action in their goal with zero conversions.`,
+    valueLabel: formatPercent(pct),
+    meta: `${formatNumber(brokenCampaigns.length)} of ${formatNumber(judged.length)} campaigns (${formatPercent(brokenSpendPct)} of spend) have a conversion action in their goal with zero conversions.`,
     explanation:
       "Spend-weighted: a campaign counts fully only if every conversion action tied to its goal is actually recording data — a dead or abandoned action inside an active goal drags the score down in proportion to that campaign's spend.",
-    methodology: `For every campaign in this account with spend and a conversion goal, we look at each conversion action tied to that goal and check whether it recorded any conversions in the last 30 days. A campaign counts fully only if every action in its goal is converting; it counts for nothing if none are. Each campaign's fraction is then weighted by its own share of total judged spend, so a dead action in a small campaign barely moves the score while the same issue in the account's biggest campaign moves it a lot. ${brokenCampaigns.length} of ${judged.length} judged campaigns (${brokenSpendPct.toFixed(0)}% of judged spend) have at least one dead action in their goal, giving a spend-weighted integrity score of ${pct.toFixed(0)}%. Full points apply at or above ${curve.fullPointsAbovePct}%; points fall to zero at or below ${curve.zeroPointsBelowPct}%. Campaigns with no conversion actions in their goal at all aren't judged — there's nothing to check.`,
+    methodology: `For every campaign in this account with spend and a conversion goal, we look at each conversion action tied to that goal and check whether it recorded any conversions in the last 30 days. A campaign counts fully only if every action in its goal is converting; it counts for nothing if none are. Each campaign's fraction is then weighted by its own share of total judged spend, so a dead action in a small campaign barely moves the score while the same issue in the account's biggest campaign moves it a lot. ${formatNumber(brokenCampaigns.length)} of ${formatNumber(judged.length)} judged campaigns (${formatPercent(brokenSpendPct)} of judged spend) have at least one dead action in their goal, giving a spend-weighted integrity score of ${formatPercent(pct)}. Full points apply at or above ${formatPercent(curve.fullPointsAbovePct)}; points fall to zero at or below ${formatPercent(curve.zeroPointsBelowPct)}. Campaigns with no conversion actions in their goal at all aren't judged — there's nothing to check.`,
+    recommendations: [
+      "Remove or fix conversion actions in a goal that haven't recorded data in 30+ days.",
+      "Double-check tag/pixel implementation on zero-data actions — a silent tracking break looks identical to \"no conversions happened.\"",
+      "Trim a campaign's goal down to the conversion actions that are actually live, instead of leaving legacy ones attached.",
+    ],
     meterPct: pct,
     thresholdTickPct: curve.fullPointsAbovePct,
   };
@@ -552,10 +609,15 @@ export function scoreBudgetConstrainedShare(
     points,
     maxPoints,
     value: pct,
-    valueLabel: `${pct.toFixed(0)}%`,
-    meta: `${limited} of ${total} Search campaigns are losing impression share to budget.`,
+    valueLabel: formatPercent(pct),
+    meta: `${formatNumber(limited)} of ${formatNumber(total)} Search campaigns are losing impression share to budget.`,
     explanation: "Shows whether the account is funded to match its own targeting.",
-    methodology: `We check every Search campaign in this account for how much impression share it's losing specifically to budget (not to rank or other factors) — a campaign losing more than ${limitedThresholdPct}% of impression share to budget counts as budget-constrained. ${limited} of ${total} Search campaigns cross that bar, a ${pct.toFixed(0)}% constrained rate. Full points apply at or below ${curve.fullPointsAtLimitedPct}%; points fall to zero at or above ${curve.zeroPointsAtLimitedPct}%, scaling linearly in between.`,
+    methodology: `We check every Search campaign in this account for how much impression share it's losing specifically to budget (not to rank or other factors) — a campaign losing more than ${formatPercent(limitedThresholdPct)} of impression share to budget counts as budget-constrained. ${formatNumber(limited)} of ${formatNumber(total)} Search campaigns cross that bar, a ${formatPercent(pct)} constrained rate. Full points apply at or below ${formatPercent(curve.fullPointsAtLimitedPct)}; points fall to zero at or above ${formatPercent(curve.zeroPointsAtLimitedPct)}, scaling linearly in between.`,
+    recommendations: [
+      "Raise daily budgets on campaigns losing significant impression share to budget, prioritizing the best-converting ones.",
+      "Reallocate budget from well-funded, lower-performing campaigns into the constrained ones instead of asking for net-new spend.",
+      "If budget can't increase, narrow targeting (geography, schedule, or audience) so existing budget fully covers a smaller, higher-intent audience.",
+    ],
     meterPct: pct,
     thresholdTickPct: curve.zeroPointsAtLimitedPct,
   };

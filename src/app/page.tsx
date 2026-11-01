@@ -110,7 +110,7 @@ export default async function Home({
     return (
       <div className={pageStyles.page}>
         <main className={pageStyles.main}>
-          <h1>Marketing Health Checker</h1>
+          <h1>Health Checker</h1>
           <p style={{ color: "crimson" }}>No access token on session.</p>
         </main>
       </div>
@@ -125,7 +125,7 @@ export default async function Home({
     return (
       <div className={pageStyles.page}>
         <main className={pageStyles.main}>
-          <h1>Marketing Health Checker</h1>
+          <h1>Health Checker</h1>
           <p>
             <Link href="/">&larr; Back to all accounts</Link>
           </p>
@@ -165,7 +165,7 @@ export default async function Home({
   return (
     <div className={pageStyles.page}>
       <main className={pageStyles.main}>
-        <h1>Marketing Health Checker</h1>
+        <h1>Health Checker</h1>
         <p>Signed in as {session.user.email}</p>
 
         {result.ok ? (

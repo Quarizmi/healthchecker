@@ -1,10 +1,8 @@
-"use client";
-
-import { useState } from "react";
+import Link from "next/link";
 import styles from "../health-dashboard.module.css";
 import type { MetricResult } from "@/lib/health-score";
+import { formatNumber } from "@/lib/format";
 import { MeterBar } from "./MeterBar";
-import { MetricDetailModal } from "./MetricDetailModal";
 
 const STRIPE_CLASS: Record<MetricResult["status"], string> = {
   good: styles.stripe_good,
@@ -30,15 +28,13 @@ const PILL_LABEL: Record<MetricResult["status"], string> = {
 export function SignalCard({
   metric,
   customerId,
-  userEmail,
-  userName,
+  loginCustomerId,
 }: {
   metric: MetricResult;
   customerId: string;
-  userEmail: string | null;
-  userName: string | null;
+  loginCustomerId: string;
 }) {
-  const [detailOpen, setDetailOpen] = useState(false);
+  const detailHref = `/accounts/${customerId}/metrics/${metric.id}?loginCustomerId=${loginCustomerId}`;
 
   return (
     <article className={styles.card}>
@@ -61,29 +57,16 @@ export function SignalCard({
           />
         )}
         <div className={styles.cardFooter}>
-          <span>Contributes {metric.maxPoints} pts</span>
-          <button
-            type="button"
-            className={styles.detailsTrigger}
-            onClick={() => setDetailOpen(true)}
-          >
+          <span>Contributes {formatNumber(metric.maxPoints)} pts</span>
+          <Link href={detailHref} className={styles.detailsTrigger}>
             See more
-          </button>
+          </Link>
           <span>
-            {metric.status === "pending" ? "—" : metric.points} / {metric.maxPoints}
+            {metric.status === "pending" ? "—" : formatNumber(metric.points)} /{" "}
+            {formatNumber(metric.maxPoints)}
           </span>
         </div>
       </div>
-
-      {detailOpen && (
-        <MetricDetailModal
-          metric={metric}
-          customerId={customerId}
-          userEmail={userEmail}
-          userName={userName}
-          onClose={() => setDetailOpen(false)}
-        />
-      )}
     </article>
   );
 }

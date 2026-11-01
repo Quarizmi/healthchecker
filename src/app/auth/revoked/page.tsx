@@ -7,12 +7,12 @@ export default function AccessRevokedPage() {
   return (
     <div className={pageStyles.page}>
       <main className={styles.card}>
-        <h1>Access revoked</h1>
+        <h1>Quarizmi&rsquo;s access revoked</h1>
         <p className={styles.message}>
-          Your Google Ads access has been revoked, and you have been signed out. Quarizmi AdTech
-          no longer has access to your Google account or your Google Ads data. If you&rsquo;d
-          like to use Health Checker again in the future, you&rsquo;re welcome to sign in and
-          reauthorize access at any time.
+          You&rsquo;ve revoked Quarizmi AdTech&rsquo;s access to your Google account, and
+          you&rsquo;ve been signed out. We no longer have any access to your Google account or
+          your Google Ads data. If you&rsquo;d like to use Health Checker again in the future,
+          you&rsquo;re welcome to sign in and reauthorize access at any time.
         </p>
 
         <div className={styles.actions}>

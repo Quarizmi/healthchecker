@@ -13,13 +13,11 @@ const TIER_LABEL = {
 export function HealthDashboard({
   healthScore,
   customerId,
-  userEmail,
-  userName,
+  loginCustomerId,
 }: {
   healthScore: HealthScore;
   customerId: string;
-  userEmail: string | null;
-  userName: string | null;
+  loginCustomerId: string;
 }) {
   return (
     <div className={`${styles.dashboard} ${jetbrainsMono.variable}`}>
@@ -76,8 +74,7 @@ export function HealthDashboard({
             key={metric.id}
             metric={metric}
             customerId={customerId}
-            userEmail={userEmail}
-            userName={userName}
+            loginCustomerId={loginCustomerId}
           />
         ))}
       </div>

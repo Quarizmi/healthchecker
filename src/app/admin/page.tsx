@@ -9,7 +9,7 @@ import {
 } from "@/lib/admin-auth";
 import { deleteCrmLead, listCrmLeads } from "@/lib/crm";
 import { deleteMetricFeedback, listMetricFeedback } from "@/lib/metric-feedback";
-import { formatChannelType } from "@/lib/format";
+import { formatChannelType, formatCurrencyMicros, formatNumber } from "@/lib/format";
 import { DeleteButton } from "./DeleteButton";
 import { jetbrainsMono } from "./fonts";
 import styles from "./admin.module.css";
@@ -149,7 +149,7 @@ export default async function AdminPage({
             <div className={styles.statLabel}>Leads</div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statValue}>${(totalSpendMicros / 1_000_000).toFixed(0)}</div>
+            <div className={styles.statValue}>{formatCurrencyMicros(totalSpendMicros)}</div>
             <div className={styles.statLabel}>Tracked spend (30d)</div>
           </div>
           <div className={styles.statCard}>
@@ -208,14 +208,14 @@ export default async function AdminPage({
                         </div>
                       </td>
                       <td className={styles.numCell}>
-                        ${(lead.totalSpendMicros / 1_000_000).toFixed(2)}
+                        {formatCurrencyMicros(lead.totalSpendMicros)}
                       </td>
                       <td>
                         {lead.spendByChannelType.length > 0 ? (
                           <div className={styles.splitList}>
                             {lead.spendByChannelType.map((c) => (
                               <span key={c.channelType} className={styles.splitPill}>
-                                {formatChannelType(c.channelType)} {c.pct.toFixed(0)}%
+                                {formatChannelType(c.channelType)} {formatNumber(c.pct, 0)}%
                               </span>
                             ))}
                           </div>
@@ -283,7 +283,7 @@ export default async function AdminPage({
                           {STATUS_LABEL[f.status] ?? f.status}
                         </span>
                         <br />
-                        {f.valueLabel} ({f.points}/{f.maxPoints} pts)
+                        {f.valueLabel} ({formatNumber(f.points)}/{formatNumber(f.maxPoints)} pts)
                       </td>
                       <td className={styles.commentCell}>{f.comment}</td>
                       <td>

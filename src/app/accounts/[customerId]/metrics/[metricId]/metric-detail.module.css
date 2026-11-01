@@ -1,0 +1,72 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  font-size: 22px;
+  margin: 0;
+}
+
+.printButton {
+  font-family: var(--font-mulish), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--health-text-secondary);
+  background: var(--health-surface);
+  border: 1px solid var(--health-border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.printButton:hover {
+  color: var(--health-text);
+}
+
+.stat {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 20px;
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--health-text-muted);
+  margin-top: 4px;
+}
+
+.meterWrap {
+  margin-top: 16px;
+  max-width: 420px;
+}
+
+.recommendationsList {
+  margin: 0;
+  padding-left: 1.3em;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--health-text-secondary);
+}
+
+@media print {
+  .noPrint {
+    display: none;
+  }
+}

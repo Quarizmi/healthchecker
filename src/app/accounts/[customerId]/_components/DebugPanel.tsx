@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { formatChannelType } from "@/lib/format";
 import { displayError } from "@/lib/error-display";
 import type { AutoApplyRulesResult, SearchNetworkSettingsResult } from "@/lib/google-ads";
-import type { SpendByChannelType, CallTiming } from "../page";
+import type { SpendByChannelType, CallTiming } from "@/lib/run-health-check";
 
 /** Internal diagnostics for the health check — auto-apply rules, search
  * network settings, spend breakdown, and timing. Not meant for end users;
