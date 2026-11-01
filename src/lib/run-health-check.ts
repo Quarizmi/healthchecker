@@ -110,6 +110,7 @@ export async function runHealthCheck(
   healthScore: HealthScore;
   autoApplyResult: AutoApplyRulesResult | null;
   accountName: string | null;
+  currencyCode: string | null;
   totalSpendMicros: number;
   spendByChannelType: SpendByChannelType[];
   searchNetworkResult: SearchNetworkSettingsResult | null;
@@ -129,6 +130,7 @@ export async function runHealthCheck(
       healthScore: buildErrorHealthScore("Not signed in.", maxPoints),
       autoApplyResult: null,
       accountName: null,
+      currencyCode: null,
       totalSpendMicros: 0,
       spendByChannelType: [],
       searchNetworkResult: null,
@@ -153,6 +155,7 @@ export async function runHealthCheck(
   ]);
 
   const accountName = customerInfoResult.ok ? customerInfoResult.name : null;
+  const currencyCode = customerInfoResult.ok ? customerInfoResult.currencyCode : null;
   const totalSpendMicros = result.ok
     ? result.campaigns.reduce((sum, c) => sum + Number(c.costMicros), 0)
     : 0;
@@ -165,6 +168,7 @@ export async function runHealthCheck(
       healthScore: buildNoDataHealthScore(maxPoints),
       autoApplyResult: null,
       accountName,
+      currencyCode,
       totalSpendMicros: 0,
       spendByChannelType: [],
       searchNetworkResult: null,
@@ -364,6 +368,7 @@ export async function runHealthCheck(
     healthScore,
     autoApplyResult,
     accountName,
+    currencyCode,
     totalSpendMicros,
     spendByChannelType,
     searchNetworkResult,

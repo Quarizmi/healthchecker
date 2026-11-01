@@ -23,6 +23,7 @@ export default async function AccountCampaigns({
     healthScore,
     autoApplyResult,
     accountName,
+    currencyCode,
     totalSpendMicros,
     spendByChannelType,
     searchNetworkResult,
@@ -68,7 +69,7 @@ export default async function AccountCampaigns({
           <Link href="/">&larr; Back to accounts</Link>
         </p>
         <p style={{ marginBottom: 36 }}>
-          Total spend (last 30 days): {formatCurrencyMicros(totalSpendMicros)}
+          Total spend (last 30 days): {formatCurrencyMicros(totalSpendMicros, currencyCode)}
         </p>
 
         <HealthDashboard

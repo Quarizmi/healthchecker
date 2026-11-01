@@ -1162,11 +1162,11 @@ export async function getCampaignConversionGoalSettings(
 }
 
 export type CustomerInfoResult =
-  | { ok: true; name: string | null }
+  | { ok: true; name: string | null; currencyCode: string | null }
   | { ok: false; error: string };
 
 type CustomerRow = {
-  customer: { descriptiveName?: string };
+  customer: { descriptiveName?: string; currencyCode?: string };
 };
 
 /** Fetches the account's own descriptive name — used for the page title
@@ -1256,10 +1256,14 @@ export async function getCustomerInfo(
       loginCustomerId,
       accessToken,
       developerToken,
-      `SELECT customer.descriptive_name FROM customer`
+      `SELECT customer.descriptive_name, customer.currency_code FROM customer`
     );
 
-    return { ok: true, name: rows[0]?.customer.descriptiveName ?? null };
+    return {
+      ok: true,
+      name: rows[0]?.customer.descriptiveName ?? null,
+      currencyCode: rows[0]?.customer.currencyCode ?? null,
+    };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
   }

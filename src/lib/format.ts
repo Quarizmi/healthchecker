@@ -22,13 +22,18 @@ export function formatPercent(value: number, maxDecimals = 0): string {
   return `${formatNumber(value, maxDecimals)}%`;
 }
 
-/** A Google Ads cost-micros value as a dollar amount, e.g.
- * 1234567890 -> "$1,234.57". Always shows exactly 2 decimals, since this is
- * money, not a measurement that should drop trailing zeros. */
-export function formatCurrencyMicros(micros: number): string {
-  const dollars = micros / 1_000_000;
-  return `$${dollars.toLocaleString("en-US", {
+/** A Google Ads cost-micros value as a currency amount, e.g.
+ * 1234567890 -> "$1,234.57". `currencyCode` is the account's own currency
+ * (e.g. "EUR", "GBP") — defaults to USD when unknown, since most accounts
+ * are USD and that matches the previous hardcoded "$" behavior. Always
+ * shows exactly 2 decimals, since this is money, not a measurement that
+ * should drop trailing zeros. */
+export function formatCurrencyMicros(micros: number, currencyCode?: string | null): string {
+  const amount = micros / 1_000_000;
+  return amount.toLocaleString("en-US", {
+    style: "currency",
+    currency: currencyCode ?? "USD",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })}`;
+  });
 }
