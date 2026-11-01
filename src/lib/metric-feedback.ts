@@ -61,3 +61,8 @@ export async function listMetricFeedback(): Promise<MetricFeedback[]> {
   const snapshot = await getFirestore().collection(COLLECTION).orderBy("createdAt", "desc").get();
   return snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as MetricFeedback) }));
 }
+
+/** Permanently removes one feedback row — used by the admin page's delete action. */
+export async function deleteMetricFeedback(id: string): Promise<void> {
+  await getFirestore().collection(COLLECTION).doc(id).delete();
+}

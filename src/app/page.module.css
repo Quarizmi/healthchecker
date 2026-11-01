@@ -82,14 +82,6 @@
   opacity: 0.6;
 }
 
-.pendingNote {
-  margin-top: 12px;
-  max-width: 320px;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  opacity: 0.7;
-}
-
 @media (max-width: 600px) {
   .loginCard {
     padding: 56px 24px;

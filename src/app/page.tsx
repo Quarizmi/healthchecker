@@ -58,9 +58,6 @@ export default async function Home({
             well it&rsquo;s being managed, with concrete recommendations for what to fix first.
           </p>
 
-          <p className={pageStyles.contactLabel}>Get in touch:</p>
-          <ContactLinks />
-
           <form
             action={async () => {
               "use server";
@@ -71,10 +68,9 @@ export default async function Home({
               Sign in with Google
             </button>
           </form>
-          <p className={pageStyles.pendingNote}>
-            Google is still reviewing our app, so sign-in is invite-only for now &mdash; message
-            us above first and we&rsquo;ll add you as a tester.
-          </p>
+
+          <p className={pageStyles.contactLabel}>Get in touch:</p>
+          <ContactLinks />
         </main>
 
         <section className={pageStyles.howItWorks}>

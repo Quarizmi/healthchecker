@@ -13,7 +13,7 @@ const linkButtonStyle: CSSProperties = {
 
 async function signOutAction() {
   "use server";
-  await signOut();
+  await signOut({ redirectTo: "/" });
 }
 
 /**
@@ -44,7 +44,7 @@ async function revokeAccessAction() {
     }
   }
 
-  await signOut({ redirectTo: "/" });
+  await signOut({ redirectTo: "/auth/revoked" });
 }
 
 export async function Footer() {
